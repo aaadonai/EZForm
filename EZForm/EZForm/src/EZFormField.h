@@ -43,6 +43,7 @@ typedef BOOL (^EZFormFieldValidator)(id value);	    // block validator
 @property (nonatomic, weak, readonly) EZForm *form;
 @property (nonatomic, strong) UIView *inputAccessoryView;
 @property (nonatomic, copy) NSString *key;
+@property (nonatomic, copy, readonly) NSString *errorMessage;
 
 
 /** Initialises an allocated EZFormField object with the specified key.
@@ -102,6 +103,19 @@ typedef BOOL (^EZFormFieldValidator)(id value);	    // block validator
  *  @param validator A block object containing the validation logic.
  */
 - (void)addValidator:(BOOL (^)(id value))validator;
+
+/** Adds a user-defined validator with a message.
+ *
+ *  User-defined validators will be called, in order, to validate
+ *  the field value and should return YES if the value is valid,
+ *  NO otherwise.
+ *
+ *  Validators are called until one of them returns NO.
+ *
+ *  @param validator A block object containing the validation logic.
+ *  @param message A string with the message that should be displayed when returns NO
+ */
+- (void)addValidator:(BOOL (^)(id value))validator withMessage:(NSString*)message;
 
 /** Returns a boolean indicating whether the field value is valid.
  */

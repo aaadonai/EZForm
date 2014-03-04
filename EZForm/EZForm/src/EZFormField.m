@@ -30,9 +30,11 @@
 @interface EZFormField () {
     VALIDATOR validatorFn;
     NSMutableArray *validationBlocks;
+    NSMutableDictionary *validationMessages;
 }
 
 @property (nonatomic, weak, readwrite) EZForm *form;
+@property (nonatomic, copy, readwrite) NSString *errorMessage;
 @end
 
 
@@ -111,6 +113,12 @@
     [validationBlocks addObject:[validator copy]];
 }
 
+- (void)addValidator:(BOOL (^)(id))validator withMessage:(NSString *)message
+{
+    [self addValidator:validator];
+    [validationMessages setObject:message forKey:validator];
+}
+
 - (BOOL)isValid
 {
     BOOL result = YES;
@@ -121,6 +129,12 @@
 	for (unsigned i=0; result && i < [validationBlocks count]; i++) {
 	    BOOL (^validator)(id value) = validationBlocks[i];
 	    result = validator(value);
+            if (!result) {
+                self.errorMessage = [validationMessages objectForKey:validator];
+            }
+            else {
+                self.errorMessage = nil;
+            }
 	}
 	
 	if (result && validatorFn) {
@@ -170,6 +184,7 @@
 	self.key = aKey;
 	
 	validationBlocks = [[NSMutableArray alloc] init];
+        validationMessages = [[NSMutableDictionary alloc]init];
     }
     
     return self;
